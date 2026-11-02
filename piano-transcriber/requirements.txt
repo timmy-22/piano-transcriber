@@ -1,0 +1,11 @@
+numpy
+scipy
+librosa
+soundfile
+matplotlib
+music21
+mir_eval
+pretty_midi
+jupyter
+pytest
+pyfluidsynth

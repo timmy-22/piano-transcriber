@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+venv/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Audio / generated data (too big for git; regenerate with eval/make_test_data.py)
+data/
+*.wav
+*.sf2
+
+# Keep these tracked
+!results/
+!figures/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
