@@ -10,6 +10,7 @@ Needs FluidSynth installed (e.g. `brew install fluidsynth` / `apt install fluids
 and pyfluidsynth (`pip install pyfluidsynth`).
 """
 import argparse
+import os
 from pathlib import Path
 
 import numpy as np
@@ -44,7 +45,7 @@ def random_melody(rng, n_notes=16, bpm=None, low=48, high=84):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--soundfont", required=True)
+    ap.add_argument("--soundfont", default=os.environ.get("PIANO_SF2"),required=os.environ.get("PIANO_SF2") is None)
     ap.add_argument("--n", type=int, default=20)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--detune", type=float, default=0.0, help="global detune in cents")
