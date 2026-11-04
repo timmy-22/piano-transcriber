@@ -4,8 +4,19 @@
 """
 import argparse
 
+import numpy as np
+import librosa
+
+from .config import HOP
 from .note import Note
 from . import load, pitch, tuning, onsets, segment, rhythm, notation
+
+
+def loudness_db(y: np.ndarray, hop: int = HOP) -> np.ndarray:
+    """Frame loudness in dB (RMS), on the same frame grid as everything else.
+    0 dB = the loudest frame in the file."""
+    rms = librosa.feature.rms(y=y, hop_length=hop)[0]
+    return librosa.amplitude_to_db(rms, ref=np.max)
 
 
 def transcribe(path: str) -> list[Note]:
@@ -16,7 +27,8 @@ def transcribe(path: str) -> list[Note]:
     cents = tuning.estimate_tuning(f0, voiced)
     A = pitch.f0_to_activation(f0, voiced, cents)
     onset_frames = onsets.detect_onsets(onsets.onset_envelope(y, sr), sr)
-    return segment.activation_to_notes(A, onset_frames, sr)
+    rms_db = loudness_db(y)
+    return segment.activation_to_notes(A, onset_frames, sr, rms_db=rms_db)
 
 
 def main():

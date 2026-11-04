@@ -28,3 +28,8 @@ Three lines per session, max. Add entries with `python log.py` or by hand.
 - Did: first end-to-end evaluation
 - Learned: onset F1 0.976, full F1 0.914; offsets are the main weakness
 - Next: error analysis on melody_002 and 004
+
+## 2026-11-04
+- Did: fixed slope_db default override; release detection now active in evaluate.py
+- Learned: held-out F1 0.901 -> 0.961 with release detection; remaining errors are mostly extra notes (P 0.942 < R 0.981)
+- Next: attack pitch glitches / extra notes
