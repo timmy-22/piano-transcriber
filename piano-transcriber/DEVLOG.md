@@ -18,3 +18,13 @@ Three lines per session, max. Add entries with `python log.py` or by hand.
 - Did: cd D:\FMP
 - Learned: python -m venv .venv
 - Next: .venv\Scripts\Activate.ps1
+
+## 2026-11-04
+- Did: onsets: librosa spectral flux + peak picking; swept delta on test set
+- Learned: F=1.0 for delta 0.05-0.1, drops to 0.63 at 0.5 (quiet notes missed); chose 0.1 for margin
+- Next: segmentation
+
+## 2026-11-04
+- Did: first end-to-end evaluation
+- Learned: onset F1 0.976, full F1 0.914; offsets are the main weakness
+- Next: error analysis on melody_002 and 004
