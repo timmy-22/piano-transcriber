@@ -13,3 +13,8 @@ Three lines per session, max. Add entries with `python log.py` or by hand.
 - Did: set up venv, FluidSynth and soundfont; generated synthetic test set
 - Learned: FluidSynth runs as a library from Python, the exe is only for live MIDI
 - Next: fundamentals: sampling, DFT, windowing; start YIN
+
+## 2026-11-04
+- Did: cd D:\FMP
+- Learned: python -m venv .venv
+- Next: .venv\Scripts\Activate.ps1
