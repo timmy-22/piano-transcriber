@@ -21,3 +21,10 @@ def key_to_midi(k: int) -> int:
 def midi_to_key(m: int) -> int:
     """MIDI note number -> activation-matrix column."""
     return m - MIDI_MIN
+
+# --- Segmentation (tuned on data/tune, reported on data/test) ---
+RELEASE_SLOPE_DB = 3.0   # note ends where loudness falls > this many dB per 4 frames...
+RELEASE_RATIO = 1.5      # ...and > this many times faster than just before
+REQUIRE_ONSET = True     # drop candidate notes with no onset near their start
+ONSET_BEFORE_TOL = 3     # frames an onset may sit BEFORE a pitch run starts (~35 ms)
+ONSET_AFTER_TOL = 2      # frames an onset may sit AFTER a pitch run starts (~23 ms)

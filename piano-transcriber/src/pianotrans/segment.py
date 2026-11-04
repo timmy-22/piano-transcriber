@@ -6,7 +6,8 @@ Works per key, so it already handles polyphony (several keys active at once).
 import numpy as np
 import librosa
 
-from .config import SR, HOP, key_to_midi
+from .config import (SR, HOP, key_to_midi, RELEASE_SLOPE_DB, RELEASE_RATIO,
+                     REQUIRE_ONSET, ONSET_BEFORE_TOL, ONSET_AFTER_TOL)
 from .note import Note
 
 
@@ -35,7 +36,7 @@ def split_at_onsets(run: tuple[int, int], onset_frames: np.ndarray,
 
 
 def find_release(start: int, end: int, rms_db: np.ndarray,
-                 slope_db: float = 3.0, ratio: float = 1.5,
+                 slope_db: float = RELEASE_SLOPE_DB, ratio: float = RELEASE_RATIO,
                  window: int = 4, skip: int = 9) -> int | None:
     """Return the frame where the key was released, or None.
 
@@ -58,16 +59,24 @@ def find_release(start: int, end: int, rms_db: np.ndarray,
 def activation_to_notes(A: np.ndarray, onset_frames: np.ndarray,
                         sr: int = SR, hop: int = HOP,
                         min_duration: float = 0.05,
-                        snap_tol: int = 3,
                         rms_db: np.ndarray | None = None,
-                        slope_db: float = 3.0,
-                        ratio: float = 1.5) -> list[Note]:
+                        slope_db: float = RELEASE_SLOPE_DB,
+                        ratio: float = RELEASE_RATIO,
+                        require_onset: bool = REQUIRE_ONSET,
+                        before_tol: int = ONSET_BEFORE_TOL,
+                        after_tol: int = ONSET_AFTER_TOL) -> list[Note]:
     """Activation matrix -> list of Notes in SECONDS, sorted by onset.
 
-    rms_db: frame loudness in dB on the same frame grid (see
-    pipeline.loudness_db). If given, notes end at the detected release
-    instead of when the pitch tracker stops hearing them (which includes
-    the reverb tail).
+    Each candidate note (a run of active frames for one key) is matched to the
+    nearest onset within `before_tol` frames before its start or `after_tol`
+    frames after it, and its start is moved to that onset.
+    The window is two-sided because pYIN's long analysis window "sees" a note
+    slightly early, while detected onsets arrive slightly late.
+
+    require_onset: drop candidates with no matching onset. Real notes start
+                   with an attack; reverb-tail fragments and junk pitches don't.
+    rms_db:        frame loudness in dB, same frame grid (pipeline.loudness_db).
+                   Enables release detection for note endings.
     """
     onset_frames = np.asarray(onset_frames)
     notes = []
@@ -76,16 +85,20 @@ def activation_to_notes(A: np.ndarray, onset_frames: np.ndarray,
         for run in active_runs(A[:, k]):              # each stretch it's active
             for start, end in split_at_onsets(run, onset_frames):
 
-                # pYIN often reports pitch a few frames after the attack:
-                # if an onset sits just before this start, move the start back to it
-                before = onset_frames[(onset_frames <= start) &
-                                      (onset_frames >= start - snap_tol)]
-                if len(before):
-                    start = int(before.max())
+                # Match this candidate to the nearest onset around its start
+                near = onset_frames[(onset_frames >= start - before_tol) &
+                                    (onset_frames <= start + after_tol)]
+                if len(near):
+                    start = int(near[np.argmin(np.abs(near - start))])
+                elif require_onset:
+                    continue                          # no attack: not a real note
+                if start >= end:
+                    continue
 
                 # End at the key release rather than the end of the reverb tail
                 if rms_db is not None:
-                    release = find_release(start, end, rms_db,slope_db=slope_db, ratio=ratio)
+                    release = find_release(start, end, rms_db,
+                                           slope_db=slope_db, ratio=ratio)
                     if release is not None:
                         end = release
 
