@@ -46,7 +46,7 @@ def notes_to_arrays(notes):
 
 def load_reference(mid_path):
     import pretty_midi
-    from pianotrans.types import Note
+    from pianotrans.note import Note
     pm = pretty_midi.PrettyMIDI(str(mid_path))
     return [Note(n.start, n.end, n.pitch, n.velocity)
             for inst in pm.instruments for n in inst.notes]

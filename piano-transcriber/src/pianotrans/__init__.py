@@ -1,4 +1,4 @@
 """Automatic piano transcription: audio -> notes -> sheet music."""
-from .types import Note
+from .note import Note
 
 __all__ = ["Note"]
