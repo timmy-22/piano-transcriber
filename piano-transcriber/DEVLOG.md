@@ -38,3 +38,8 @@ Three lines per session, max. Add entries with `python log.py` or by hand.
 - Did: onset-gated segmentation with two-sided onset matching
 - Learned: held-out F1 0.961 -> 0.982, onset-only 0.997; 23/30 melodies perfect
 - Next: rhythm + notation: first sheet music
+
+## 2026-11-05
+- Did: notation: key signature by scale coverage, key-aware spelling, music21 MusicXML; fixed tempo octave bug
+- Learned: 96.3% of notes identical to ground-truth sheet music; key signature 30/30
+- Next: test on real recordings of my own playing

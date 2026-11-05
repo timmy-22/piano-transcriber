@@ -28,3 +28,9 @@ RELEASE_RATIO = 1.5      # ...and > this many times faster than just before
 REQUIRE_ONSET = True     # drop candidate notes with no onset near their start
 ONSET_BEFORE_TOL = 3     # frames an onset may sit BEFORE a pitch run starts (~35 ms)
 ONSET_AFTER_TOL = 2      # frames an onset may sit AFTER a pitch run starts (~23 ms)
+
+# --- Rhythm ---
+TEMPO_MIN = 60.0         # BPM search range for estimate_tempo
+TEMPO_MAX = 180.0
+GRID = 0.25              # quantisation grid in beats (0.25 = sixteenth note)
+LEGATO_GAP = 0.5         # silence (beats) before the next note that counts as a real rest

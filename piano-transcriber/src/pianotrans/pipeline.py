@@ -3,6 +3,7 @@
     python -m pianotrans.pipeline input.wav -o out.musicxml
 """
 import argparse
+from pathlib import Path
 
 import numpy as np
 import librosa
@@ -39,11 +40,11 @@ def main():
     args = ap.parse_args()
 
     notes = transcribe(args.audio)
-    y, sr = load.load_audio(args.audio)
-    bpm, t0 = rhythm.estimate_tempo(y, sr)
-    beats = rhythm.quantise(notes, bpm, t0)
+    bpm = rhythm.estimate_tempo([n.onset for n in notes])
+    beats = rhythm.quantise(notes, bpm)
     key = notation.estimate_key(beats)
-    score = notation.build_score(beats, bpm, key, args.time_signature)
+    score = notation.build_score(beats, bpm, key, args.time_signature,
+                                 title=Path(args.audio).stem)
     notation.write_musicxml(score, args.out)
     print(f"{len(notes)} notes | {bpm:.0f} BPM | {key} -> {args.out}")
 
